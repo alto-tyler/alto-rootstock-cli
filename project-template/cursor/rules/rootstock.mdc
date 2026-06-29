@@ -1,0 +1,34 @@
+---
+description: Rootstock ERP agent router — loads topic-specific skill files on demand for rstk__/rstkf__ Salesforce managed package work.
+globs: ["**/*.cls", "**/*.trigger", "**/*.apex", "**/*.soql", "**/*.json", "**/*.xml"]
+alwaysApply: true
+---
+
+# Rootstock Project — Agent Router
+
+This repo uses Rootstock ERP (Salesforce managed package, rstk__/rstkf__ namespaces).
+
+Before answering Rootstock questions, read only the skill file(s) relevant to the current question. Do not load all files.
+
+## Skill Router
+
+| Topic | File to read |
+|-------|-------------|
+| Mission, scope, core rules, non-negotiables, best practices | `.claude/skills/rootstock-core.md` |
+| SOAPI modes, sales order chain (sohdr/soline/soship/soorddmd/sohdrpay) | `.claude/skills/rootstock-soapi.md` |
+| SYDATA transaction types, inventory/cost processing, async queue | `.claude/skills/rootstock-sydata.md` |
+| SYDATAT transaction IDs, inventory transfers between locations/sites/divisions | `.claude/skills/rootstock-sydatat.md` |
+| POLOADER modes, purchasing chain (pocntl/pohdr/poline/poitem) | `.claude/skills/rootstock-poloader.md` |
+| Work orders, WO components, cost transactions, manufacturing flows | `.claude/skills/rootstock-manufacturing.md` |
+| Item masters (peitem/icitem/soprod/poitem), inventory state objects | `.claude/skills/rootstock-inventory.md` |
+| Test data factories, setup sequence, coverage rules, trigger options | `.claude/skills/rootstock-testing.md` |
+| Debugging, org metadata inspection, proactive org queries, community research | `.claude/skills/rootstock-debug.md` |
+| Session init, MCP setup, deploy/test preferences, agent updates | `.claude/skills/rootstock-session.md` |
+
+## Quick Reference
+
+- Trigger options in tests only: `rstk__triggeroptions__c = 'UT'` (rstk__) / `rstkf__triggeroptions__c = 'UT'` (rstkf__)
+- **NEVER set triggeroptions in production code.**
+- SYDATA ≠ SYDATAT: SYDATA processes inventory/cost transactions; SYDATAT moves inventory between locations/sites/divisions.
+- Item setup chain: peitem → icitem → soprod (sales) / poitem (purchasing)
+- Always check org controls before assuming package behavior.

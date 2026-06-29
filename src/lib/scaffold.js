@@ -5,24 +5,26 @@ const path = require('path');
 const chalk = require('chalk');
 const { fetchRemoteFile } = require('./fetcher');
 
-// Maps remote template paths → local project paths
+const TEMPLATE_DIR = path.join(__dirname, '../../project-template');
+
+// Maps template-relative paths → local project paths
 const SCAFFOLD_MANIFEST = [
-  { remote: 'project-template/claude/CLAUDE.md',                              local: '.claude/CLAUDE.md' },
-  { remote: 'project-template/claude/skills/rootstock-core.md',               local: '.claude/skills/rootstock-core.md' },
-  { remote: 'project-template/claude/skills/rootstock-soapi.md',              local: '.claude/skills/rootstock-soapi.md' },
-  { remote: 'project-template/claude/skills/rootstock-sydata.md',             local: '.claude/skills/rootstock-sydata.md' },
-  { remote: 'project-template/claude/skills/rootstock-sydatat.md',            local: '.claude/skills/rootstock-sydatat.md' },
-  { remote: 'project-template/claude/skills/rootstock-poloader.md',           local: '.claude/skills/rootstock-poloader.md' },
-  { remote: 'project-template/claude/skills/rootstock-manufacturing.md',      local: '.claude/skills/rootstock-manufacturing.md' },
-  { remote: 'project-template/claude/skills/rootstock-inventory.md',          local: '.claude/skills/rootstock-inventory.md' },
-  { remote: 'project-template/claude/skills/rootstock-testing.md',            local: '.claude/skills/rootstock-testing.md' },
-  { remote: 'project-template/claude/skills/rootstock-debug.md',              local: '.claude/skills/rootstock-debug.md' },
-  { remote: 'project-template/claude/skills/rootstock-session.md',            local: '.claude/skills/rootstock-session.md' },
-  { remote: 'project-template/cursor/rules/rootstock.mdc',                    local: '.cursor/rules/rootstock.mdc' },
-  { remote: 'project-template/github/agents/Rootstock Agent.agent.md',        local: '.github/agents/Rootstock Agent.agent.md' },
-  { remote: 'project-template/github/copilot-instructions.md',                local: '.github/copilot-instructions.md' },
-  { remote: 'project-template/vscode/mcp.json',                               local: '.vscode/mcp.json' },
-  { remote: 'project-template/vscode/tasks.json',                             local: '.vscode/tasks.json' },
+  { template: 'claude/CLAUDE.md',                              local: '.claude/CLAUDE.md' },
+  { template: 'claude/skills/rootstock-core.md',               local: '.claude/skills/rootstock-core.md' },
+  { template: 'claude/skills/rootstock-soapi.md',              local: '.claude/skills/rootstock-soapi.md' },
+  { template: 'claude/skills/rootstock-sydata.md',             local: '.claude/skills/rootstock-sydata.md' },
+  { template: 'claude/skills/rootstock-sydatat.md',            local: '.claude/skills/rootstock-sydatat.md' },
+  { template: 'claude/skills/rootstock-poloader.md',           local: '.claude/skills/rootstock-poloader.md' },
+  { template: 'claude/skills/rootstock-manufacturing.md',      local: '.claude/skills/rootstock-manufacturing.md' },
+  { template: 'claude/skills/rootstock-inventory.md',          local: '.claude/skills/rootstock-inventory.md' },
+  { template: 'claude/skills/rootstock-testing.md',            local: '.claude/skills/rootstock-testing.md' },
+  { template: 'claude/skills/rootstock-debug.md',              local: '.claude/skills/rootstock-debug.md' },
+  { template: 'claude/skills/rootstock-session.md',            local: '.claude/skills/rootstock-session.md' },
+  { template: 'cursor/rules/rootstock.mdc',                    local: '.cursor/rules/rootstock.mdc' },
+  { template: 'github/agents/Rootstock Agent.agent.md',        local: '.github/agents/Rootstock Agent.agent.md' },
+  { template: 'github/copilot-instructions.md',                local: '.github/copilot-instructions.md' },
+  { template: 'vscode/mcp.json',                               local: '.vscode/mcp.json' },
+  { template: 'vscode/tasks.json',                             local: '.vscode/tasks.json' },
 ];
 
 function writeFile(projectRoot, relPath, content) {
@@ -32,18 +34,19 @@ function writeFile(projectRoot, relPath, content) {
   fs.writeFileSync(full, content, 'utf8');
 }
 
+// Used by `altors new` — reads from bundled project-template (fast, works offline)
 async function injectScaffolding(projectRoot) {
   const results = { ok: [], failed: [] };
 
   for (const entry of SCAFFOLD_MANIFEST) {
+    const src = path.join(TEMPLATE_DIR, entry.template);
     try {
-      process.stdout.write(chalk.dim(`  Fetching ${entry.local}...`));
-      const content = await fetchRemoteFile(entry.remote);
+      const content = fs.readFileSync(src, 'utf8');
       writeFile(projectRoot, entry.local, content);
-      process.stdout.write(`\r  ${chalk.green('✓')} ${entry.local}\n`);
+      console.log(`  ${chalk.green('✓')} ${entry.local}`);
       results.ok.push(entry.local);
     } catch (err) {
-      process.stdout.write(`\r  ${chalk.red('✗')} ${entry.local} ${chalk.dim(`(${err.message})`)}\n`);
+      console.log(`  ${chalk.red('✗')} ${entry.local} ${chalk.dim(`(${err.message})`)}`);
       results.failed.push(entry.local);
     }
   }
@@ -51,8 +54,8 @@ async function injectScaffolding(projectRoot) {
   return results;
 }
 
+// Used by `altors update` — fetches latest from remote distribution repo
 async function updateScaffolding(projectRoot) {
-  // Same as inject but reports updated vs new
   const results = { updated: [], added: [], failed: [] };
 
   for (const entry of SCAFFOLD_MANIFEST) {
@@ -60,7 +63,7 @@ async function updateScaffolding(projectRoot) {
     const exists = fs.existsSync(fullPath);
     try {
       process.stdout.write(chalk.dim(`  Fetching ${entry.local}...`));
-      const content = await fetchRemoteFile(entry.remote);
+      const content = await fetchRemoteFile(`project-template/${entry.template}`);
       writeFile(projectRoot, entry.local, content);
       const label = exists ? chalk.blue('↑') : chalk.green('+');
       process.stdout.write(`\r  ${label} ${entry.local}\n`);
