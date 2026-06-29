@@ -55,35 +55,24 @@ git tag v1.0.0
 git push origin v1.0.0
 ```
 
-The workflow in `.github/workflows/publish.yml` runs `npm publish` to `https://npm.pkg.github.com` using the built-in `GITHUB_TOKEN`. No secrets needed — it's granted automatically by the `packages: write` permission.
+The workflow in `.github/workflows/publish.yml` runs `npm publish` to npmjs.com using the `NPM_TOKEN` secret (add this in the repo Settings → Secrets → Actions).
 
 ---
 
 ## How users install it
 
-Users need a GitHub Personal Access Token (PAT) with `read:packages` scope.
-They only need to do this **once**:
+No auth required — the package is public on npmjs.com:
 
 ```bash
-# Set token for this session
-export GITHUB_TOKEN=ghp_xxxxxxxxxxxx   # Mac/Linux
-$env:GITHUB_TOKEN = "ghp_xxxxxxxxxxxx"  # Windows PowerShell
-
-# Add GitHub Packages registry to npm (one-time)
-npm config set @alto-tyler:registry https://npm.pkg.github.com
-npm config set //npm.pkg.github.com/:_authToken ghp_xxxxxxxxxxxx
-
-# Install the CLI globally
-npm install -g @alto-tyler/alto-rootstock-cli
-
-# Save token so altors can fetch skill files (writes to ~/.npmrc too)
-altors install --save-token
+npm install -g @altotyler/alto-rootstock-cli
 ```
+
+After install, run `altors install` once to save your GitHub token for fetching skill files from the private distribution repo.
 
 After the one-time setup, updates are one command:
 
 ```bash
-npm update -g @alto-tyler/alto-rootstock-cli
+npm update -g @altotyler/alto-rootstock-cli
 altors install   # updates global VS Code agent files
 ```
 
@@ -96,7 +85,7 @@ Every time `altors` runs any command, it fetches `version.json` from the distrib
 ```
 ┌──────────────────────────────────────────────────────┐
 │  Update available: 1.0.0 → 1.2.0                    │
-│  Run: npm update -g @alto-tyler/alto-rootstock-cli  │
+│  Run: npm update -g @altotyler/alto-rootstock-cli  │
 └──────────────────────────────────────────────────────┘
 ```
 

@@ -91,7 +91,7 @@ async function promptForToken() {
 
   if (updated) {
     fs.writeFileSync(npmrcPath, npmrcContent.trimStart(), 'utf8');
-    console.log(`  ${chalk.green('✓')} ~/.npmrc updated — ${chalk.cyan('npm update -g @alto-tyler/alto-rootstock-cli')} will work without re-entering a token`);
+    console.log(`  ${chalk.green('✓')} ~/.npmrc updated — ${chalk.cyan('npm update -g @altotyler/alto-rootstock-cli')} will work without re-entering a token`);
   }
 
   process.env.GITHUB_TOKEN = token;
@@ -143,7 +143,7 @@ async function run() {
   console.log(chalk.dim('    3. For project-level skills: run altors new or altors update in your project'));
   console.log();
   console.log(chalk.bold('  To update in future:'));
-  console.log(chalk.cyan('    npm update -g @alto-tyler/alto-rootstock-cli'));
+  console.log(chalk.cyan('    npm update -g @altotyler/alto-rootstock-cli'));
   console.log(chalk.cyan('    altors install'));
   console.log();
 }
