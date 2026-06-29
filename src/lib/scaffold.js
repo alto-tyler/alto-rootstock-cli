@@ -66,11 +66,11 @@ async function updateScaffolding(projectRoot) {
       const content = await fetchRemoteFile(`project-template/${entry.template}`);
       writeFile(projectRoot, entry.local, content);
       const label = exists ? chalk.blue('↑') : chalk.green('+');
-      process.stdout.write(`\r  ${label} ${entry.local}\n`);
+      process.stdout.write(`\r${' '.repeat(70)}\r  ${label} ${entry.local}\n`);
       if (exists) results.updated.push(entry.local);
       else results.added.push(entry.local);
     } catch (err) {
-      process.stdout.write(`\r  ${chalk.red('✗')} ${entry.local} ${chalk.dim(`(${err.message})`)}\n`);
+      process.stdout.write(`\r${' '.repeat(70)}\r  ${chalk.red('✗')} ${entry.local} ${chalk.dim(`(${err.message})`)}\n`);
       results.failed.push(entry.local);
     }
   }
