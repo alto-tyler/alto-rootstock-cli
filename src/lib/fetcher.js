@@ -1,17 +1,16 @@
 'use strict';
 
 const https = require('https');
-const { load, getToken } = require('./config');
+const { load } = require('./config');
 
-function fetchUrl(url, token) {
+function fetchUrl(url) {
   return new Promise((resolve, reject) => {
     const opts = new URL(url);
     const headers = { 'User-Agent': 'alto-rootstock-cli' };
-    if (token) headers['Authorization'] = `Bearer ${token}`;
 
     https.get({ hostname: opts.hostname, path: opts.pathname + opts.search, headers }, (res) => {
       if (res.statusCode === 302 || res.statusCode === 301) {
-        return fetchUrl(res.headers.location, token).then(resolve).catch(reject);
+        return fetchUrl(res.headers.location).then(resolve).catch(reject);
       }
       if (res.statusCode !== 200) {
         res.resume();
@@ -27,9 +26,7 @@ function fetchUrl(url, token) {
 
 async function fetchRemoteFile(remotePath) {
   const { baseUrl } = load();
-  const token = getToken();
-  const url = `${baseUrl}/${remotePath}`;
-  return fetchUrl(url, token);
+  return fetchUrl(`${baseUrl}/${remotePath}`);
 }
 
 async function fetchRemoteJson(remotePath) {

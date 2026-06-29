@@ -6,7 +6,7 @@ const fs = require('fs');
 const chalk = require('chalk');
 const prompts = require('prompts');
 const { injectScaffolding } = require('../lib/scaffold');
-const { getToken } = require('../lib/config');
+
 
 function banner() {
   console.log();
@@ -28,17 +28,6 @@ function checkSfCli() {
   console.log(`  ${chalk.green('✓')} Salesforce CLI detected ${chalk.dim(`(${version})`)}`);
 }
 
-function checkGithubToken() {
-  const token = getToken();
-  if (!token) {
-    console.log();
-    console.log(chalk.yellow('  ⚠  No GitHub token found.'));
-    console.log(chalk.dim('     Skill files are hosted on a private repo.'));
-    console.log(chalk.dim('     Set GITHUB_TOKEN or run:') + chalk.cyan(' altors install --save-token'));
-    console.log();
-  }
-  return token;
-}
 
 async function promptProjectDetails() {
   console.log();
@@ -93,7 +82,6 @@ function runSfProjectGenerate(projectName, outputDir) {
 async function run() {
   banner();
   checkSfCli();
-  checkGithubToken();
 
   const { projectName, outputDir } = await promptProjectDetails();
 

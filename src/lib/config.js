@@ -20,17 +20,4 @@ function load() {
   return { ...DEFAULTS };
 }
 
-function save(data) {
-  if (!fs.existsSync(CONFIG_DIR)) fs.mkdirSync(CONFIG_DIR, { recursive: true });
-  fs.writeFileSync(CONFIG_FILE, JSON.stringify(data, null, 2), 'utf8');
-}
-
-function getToken() {
-  return process.env.GITHUB_TOKEN || load().token || null;
-}
-
-function saveToken(token) {
-  save({ ...load(), token });
-}
-
-module.exports = { load, save, getToken, saveToken, CONFIG_FILE };
+module.exports = { load, CONFIG_FILE };
