@@ -1,0 +1,24 @@
+{
+  "name": "@alto-tyler/alto-rootstock-cli",
+  "version": "1.0.0",
+  "description": "CLI for creating and managing Rootstock Salesforce DX projects with AI agent scaffolding",
+  "bin": {
+    "altors": "./bin/altors.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alto-tyler/alto-rootstock-cli.git"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^12.1.0",
+    "prompts": "^2.4.2"
+  }
+}
