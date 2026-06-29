@@ -8,7 +8,7 @@ const CONFIG_DIR = path.join(os.homedir(), '.alto-rootstock');
 const CONFIG_FILE = path.join(CONFIG_DIR, 'config.json');
 
 const DEFAULTS = {
-  baseUrl: 'https://raw.githubusercontent.com/alto-tyler/rootstock-agent-distribution/main',
+  baseUrl: 'https://raw.githubusercontent.com/alto-tyler/alto-rootstock-cli/main',
 };
 
 function load() {
