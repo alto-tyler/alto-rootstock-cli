@@ -5,9 +5,6 @@ const path = require('path');
 const chalk = require('chalk');
 const { fetchRemoteFile } = require('./fetcher');
 
-const TEMPLATE_DIR = path.join(__dirname, '../../project-template');
-
-// Maps template-relative paths → local project paths
 const SCAFFOLD_MANIFEST = [
   { template: 'claude/CLAUDE.md',                              local: '.claude/CLAUDE.md' },
   { template: 'claude/skills/rootstock-core.md',               local: '.claude/skills/rootstock-core.md' },
@@ -36,19 +33,18 @@ function writeFile(projectRoot, relPath, content) {
   fs.writeFileSync(full, content, 'utf8');
 }
 
-// Used by `altors new` — reads from bundled project-template (fast, works offline)
 async function injectScaffolding(projectRoot) {
   const results = { ok: [], failed: [] };
 
   for (const entry of SCAFFOLD_MANIFEST) {
-    const src = path.join(TEMPLATE_DIR, entry.template);
     try {
-      const content = fs.readFileSync(src, 'utf8');
+      process.stdout.write(chalk.dim(`  Fetching ${entry.local}...`));
+      const content = await fetchRemoteFile(`project-template/${entry.template}`);
       writeFile(projectRoot, entry.local, content);
-      console.log(`  ${chalk.green('✓')} ${entry.local}`);
+      process.stdout.write(`\r${' '.repeat(70)}\r  ${chalk.green('✓')} ${entry.local}\n`);
       results.ok.push(entry.local);
     } catch (err) {
-      console.log(`  ${chalk.red('✗')} ${entry.local} ${chalk.dim(`(${err.message})`)}`);
+      process.stdout.write(`\r${' '.repeat(70)}\r  ${chalk.red('✗')} ${entry.local} ${chalk.dim(`(${err.message})`)}\n`);
       results.failed.push(entry.local);
     }
   }
