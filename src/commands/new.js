@@ -3,6 +3,7 @@
 const { spawnSync } = require('child_process');
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 const chalk = require('chalk');
 const prompts = require('prompts');
 const { injectScaffolding } = require('../lib/scaffold');
@@ -43,8 +44,8 @@ async function promptProjectDetails() {
         type: 'text',
         name: 'outputDir',
         message: 'Output directory',
-        initial: '.',
-        format: v => v.trim() || '.',
+        initial: path.join(os.homedir(), 'Documents'),
+        format: v => v.trim() || path.join(os.homedir(), 'Documents'),
       },
     ],
     {
