@@ -27,38 +27,6 @@ Once a project is open, `Ctrl+Shift+P` → **"Tasks: Run Task"** exposes:
 
 ---
 
-## Deploying and packaging
-
-### 1. Create the GitHub repo
-
-Create a **private** repo: `github.com/alto-tyler/alto-rootstock-cli`
-
-This repo is separate from `rootstock-agent-distribution` — it's the CLI source code only.
-
-### 2. Push the code
-
-```bash
-cd alto-rootstock-cli
-git init
-git add .
-git commit -m "Initial release"
-git remote add origin git@github.com:alto-tyler/alto-rootstock-cli.git
-git push -u origin main
-```
-
-### 3. Publish a version
-
-Tag a release — GitHub Actions publishes it automatically to GitHub Packages:
-
-```bash
-git tag v1.0.0
-git push origin v1.0.0
-```
-
-The workflow in `.github/workflows/publish.yml` runs `npm publish` to npmjs.com using the `NPM_TOKEN` secret (add this in the repo Settings → Secrets → Actions).
-
----
-
 ## How users install it
 
 No auth required — the package is public on npmjs.com:
@@ -69,11 +37,11 @@ npm install -g @altotyler/alto-rootstock-cli
 
 After install, run `altors install` once to save your GitHub token for fetching skill files from the private distribution repo.
 
-After the one-time setup, updates are one command:
+Updates are one command:
 
 ```bash
 npm update -g @altotyler/alto-rootstock-cli
-altors install   # updates global VS Code agent files
+altors install   # re-fetches latest global VS Code agent files
 ```
 
 ---
@@ -85,11 +53,11 @@ Every time `altors` runs any command, it fetches `version.json` from the distrib
 ```
 ┌──────────────────────────────────────────────────────┐
 │  Update available: 1.0.0 → 1.2.0                    │
-│  Run: npm update -g @altotyler/alto-rootstock-cli  │
+│  Run: npm update -g @altotyler/alto-rootstock-cli   │
 └──────────────────────────────────────────────────────┘
 ```
 
-To support this, keep `version.json` in `rootstock-agent-distribution` updated with a `cliVersion` field:
+To trigger update notices, bump `cliVersion` in `rootstock-agent-distribution/version.json`:
 
 ```json
 {
@@ -100,41 +68,41 @@ To support this, keep `version.json` in `rootstock-agent-distribution` updated w
 
 ---
 
+## Releasing a new CLI version
+
+1. Update `version` in `package.json`
+2. Commit and tag: `git tag v1.x.x && git push origin v1.x.x`
+3. GitHub Actions publishes to npmjs.com automatically (requires `NPM_TOKEN` secret in repo Settings → Secrets → Actions)
+4. Update `cliVersion` in `rootstock-agent-distribution/version.json`
+5. Users see the update prompt on their next `altors` command
+
+---
+
 ## Repository layout
 
 ```
-alto-rootstock-cli/          ← this repo (CLI source, publish to GitHub Packages)
-├── bin/altors.js
+alto-rootstock-cli/               ← this repo (CLI source, published to npmjs.com)
+├── bin/altors.js                 ← entry point + update notification
 ├── src/
-│   ├── commands/new.js
-│   ├── commands/update.js
-│   ├── commands/install.js
+│   ├── commands/new.js           ← prompts, runs sf project generate, injects skills
+│   ├── commands/update.js        ← updates skill files in current project
+│   ├── commands/install.js       ← installs global VS Code agent + saves GitHub token
 │   └── lib/
-│       ├── config.js        ← ~/.alto-rootstock/config.json + ~/.npmrc auth
-│       ├── fetcher.js       ← GitHub raw file fetcher (auth-aware)
-│       ├── scaffold.js      ← writes IDE files into project
-│       └── updater.js       ← version check (non-blocking)
-├── project-template/        ← template files (publish to rootstock-agent-distribution)
-│   └── vscode/tasks.json
-└── .github/workflows/publish.yml
+│       ├── config.js             ← ~/.alto-rootstock/config.json token storage
+│       ├── fetcher.js            ← GitHub raw file fetcher (auth-aware)
+│       ├── scaffold.js           ← file manifest + writer
+│       └── updater.js            ← background version check
+├── project-template/
+│   └── vscode/tasks.json         ← injected into new projects for command palette tasks
+└── .github/workflows/publish.yml ← auto-publishes to npmjs.com on git tag push
 
-rootstock-agent-distribution/   ← separate repo (skill files + version manifest)
-├── version.json                 ← bump cliVersion here to trigger update notices
+rootstock-agent-distribution/     ← separate private repo (skill files + version manifest)
+├── version.json                  ← bump cliVersion here to trigger update notices
 └── project-template/
     ├── claude/CLAUDE.md
-    ├── claude/skills/*.md
+    ├── claude/skills/            ← 10 Rootstock skill files
     ├── cursor/rules/rootstock.mdc
     ├── github/agents/Rootstock Agent.agent.md
     ├── github/copilot-instructions.md
     └── vscode/mcp.json + tasks.json
 ```
-
----
-
-## Releasing a new version
-
-1. Update `version` in `package.json`
-2. Commit and tag: `git tag v1.x.x && git push origin v1.x.x`
-3. GitHub Actions publishes to GitHub Packages
-4. Update `cliVersion` in `rootstock-agent-distribution/version.json`
-5. Users see the update prompt on their next `altors` command
