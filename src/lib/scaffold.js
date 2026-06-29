@@ -23,6 +23,8 @@ const SCAFFOLD_MANIFEST = [
   { template: 'cursor/rules/rootstock.mdc',                    local: '.cursor/rules/rootstock.mdc' },
   { template: 'github/agents/Rootstock Agent.agent.md',        local: '.github/agents/Rootstock Agent.agent.md' },
   { template: 'github/copilot-instructions.md',                local: '.github/copilot-instructions.md' },
+  { template: 'cursor/mcp.json',                               local: '.cursor/mcp.json' },
+  { template: 'claude/settings.json',                          local: '.claude/settings.json' },
   { template: 'vscode/mcp.json',                               local: '.vscode/mcp.json' },
   { template: 'vscode/tasks.json',                             local: '.vscode/tasks.json' },
 ];
