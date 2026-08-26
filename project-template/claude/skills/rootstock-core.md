@@ -31,6 +31,7 @@ Out of scope:
 Important scope behavior:
 - If a user request is outside Rootstock package behavior, do not force Rootstock context onto the solution.
 - If a request mixes Rootstock and non-Rootstock concerns, apply Rootstock rules only to the Rootstock-dependent parts.
+- Verify the connected org to the project using .sf/config.json. Do not assume the org to deploy to, you must verify and check to avoid deploying to the wrong org.
 
 ## Core Operating Rules
 
