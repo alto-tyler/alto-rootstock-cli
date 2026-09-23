@@ -24,6 +24,14 @@ const SCAFFOLD_MANIFEST = [
   { template: 'claude/settings.json',                          local: '.claude/settings.json' },
   { template: 'vscode/mcp.json',                               local: '.vscode/mcp.json' },
   { template: 'vscode/tasks.json',                             local: '.vscode/tasks.json' },
+  // Canonical reference data the skill files above cite by path (e.g.
+  // "Canonical list source: docs/rootstock-poloader-modes.csv") -- without
+  // these, the agent instructions point at files that don't exist locally.
+  { template: 'docs/rootstock-poloader-modes.csv', local: 'docs/rootstock-poloader-modes.csv' },
+  { template: 'docs/rootstock-soapi-modes.csv', local: 'docs/rootstock-soapi-modes.csv' },
+  { template: 'docs/rootstock-sydata-txn-types.csv', local: 'docs/rootstock-sydata-txn-types.csv' },
+  { template: 'docs/rootstock-sydatat-txn-id.csv', local: 'docs/rootstock-sydatat-txn-id.csv' },
+  { template: 'docs/rootstock-field-help-sample.md', local: 'docs/rootstock-field-help-sample.md' },
 ];
 
 function writeFile(projectRoot, relPath, content) {

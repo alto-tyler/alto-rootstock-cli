@@ -20,6 +20,9 @@ After `altors new`, the generated project contains:
 - `.github/copilot-instructions.md` — VS Code Copilot always-on
 - `.vscode/mcp.json` — Salesforce DX MCP server
 - `.vscode/tasks.json` — Command palette tasks (see below)
+- `docs/*.csv` + `docs/rootstock-field-help-sample.md` — canonical reference
+  data the skill files above cite by path (e.g. "Canonical list source:
+  docs/rootstock-poloader-modes.csv")
 
 ## VS Code / Cursor Command Palette
 
