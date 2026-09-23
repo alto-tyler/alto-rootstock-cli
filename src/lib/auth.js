@@ -2,6 +2,7 @@
 
 const http = require('http');
 const { execFile } = require('child_process');
+const chalk = require('chalk');
 const { load, save } = require('./config');
 
 const LOGIN_TIMEOUT_MS = 5 * 60 * 1000;
@@ -87,4 +88,16 @@ function whoami() {
   return token ? email : null;
 }
 
-module.exports = { login, logout, whoami };
+// Called at the start of any command that needs to fetch content. Prompts
+// an interactive sign-in automatically on first use instead of failing with
+// an error that tells the user to run a separate command themselves.
+async function ensureLoggedIn() {
+  if (whoami()) return;
+  console.log();
+  console.log(chalk.yellow('  Not signed in — opening your browser to sign in with your @altoconsultants.ca Google account...'));
+  console.log();
+  const { email } = await login();
+  console.log(chalk.green(`  ✓ Signed in as ${email}`));
+}
+
+module.exports = { login, logout, whoami, ensureLoggedIn };

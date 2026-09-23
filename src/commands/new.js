@@ -7,6 +7,7 @@ const os = require('os');
 const chalk = require('chalk');
 const prompts = require('prompts');
 const { injectScaffolding } = require('../lib/scaffold');
+const { ensureLoggedIn } = require('../lib/auth');
 
 
 function banner() {
@@ -82,6 +83,14 @@ function runSfProjectGenerate(projectName, outputDir) {
 
 async function run() {
   banner();
+
+  try {
+    await ensureLoggedIn();
+  } catch (err) {
+    console.error(chalk.red(`  ✗ ${err.message}`));
+    process.exit(1);
+  }
+
   checkSfCli();
 
   const { projectName, outputDir } = await promptProjectDetails();

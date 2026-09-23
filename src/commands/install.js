@@ -5,6 +5,7 @@ const path = require('path');
 const os = require('os');
 const chalk = require('chalk');
 const { fetchRemoteFile } = require('../lib/fetcher');
+const { ensureLoggedIn } = require('../lib/auth');
 
 function getVsCodeAgentDir() {
   switch (process.platform) {
@@ -30,6 +31,13 @@ async function run() {
   console.log(chalk.bold('  Rootstock: Global Install / Update'));
   console.log(chalk.dim('  ─────────────────────────────────────────────────'));
   console.log();
+
+  try {
+    await ensureLoggedIn();
+  } catch (err) {
+    console.error(chalk.red(`  ✗ ${err.message}`));
+    process.exit(1);
+  }
 
   for (const entry of GLOBAL_FILES) {
     const target = entry.getTarget();

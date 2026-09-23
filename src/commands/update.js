@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const chalk = require('chalk');
 const { updateScaffolding } = require('../lib/scaffold');
+const { ensureLoggedIn } = require('../lib/auth');
 
 function findProjectRoot(startDir) {
   let dir = startDir;
@@ -31,7 +32,13 @@ async function run() {
   }
 
   console.log(`  ${chalk.dim('Project root:')} ${projectRoot}`);
-  console.log();
+
+  try {
+    await ensureLoggedIn();
+  } catch (err) {
+    console.error(chalk.red(`  ✗ ${err.message}`));
+    process.exit(1);
+  }
 
   const results = await updateScaffolding(projectRoot);
 
@@ -40,7 +47,7 @@ async function run() {
 
   if (results.failed.length > 0) {
     console.log(chalk.yellow(`  ⚠  ${results.failed.length} file(s) could not be fetched.`));
-    console.log(chalk.dim('     Check your GITHUB_TOKEN or network connection.'));
+    console.log(chalk.dim('     Run `altors login` again, or check your network connection.'));
   }
 
   if (total === 0 && results.failed.length === 0) {
