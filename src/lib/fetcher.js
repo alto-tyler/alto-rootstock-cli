@@ -66,4 +66,14 @@ async function fetchRemoteJson(remotePath) {
   return JSON.parse(text);
 }
 
-module.exports = { fetchRemoteFile, fetchRemoteJson, fetchUrl };
+// version.json is intentionally public and unauthenticated: the background
+// update check (updater.js) runs on every command, including before anyone
+// has ever signed in, and carries no sensitive content.
+const PUBLIC_VERSION_URL = 'https://raw.githubusercontent.com/alto-tyler/alto-rootstock-cli/main/version.json';
+
+async function fetchVersionInfo() {
+  const text = await fetchUrl(PUBLIC_VERSION_URL);
+  return JSON.parse(text);
+}
+
+module.exports = { fetchRemoteFile, fetchRemoteJson, fetchUrl, fetchVersionInfo };
