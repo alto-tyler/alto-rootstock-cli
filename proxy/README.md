@@ -9,23 +9,19 @@ credentials is whoever deploys this.
 
 ### 1. Google OAuth client
 
-No Workspace admin access is needed for any of this — it's all self-service
-inside a Google Cloud project you own. The domain restriction is enforced by
-`worker.js` itself (it checks the `hd` claim and email domain on every
-sign-in and every content request), not by anything Workspace-side.
+The domain restriction is enforced twice: by `worker.js` itself (it checks
+the `hd` claim and email domain on every sign-in and every content request)
+and, if you can set the consent screen to Internal, by Google as well.
 
 1. https://console.cloud.google.com/ → create (or reuse) a project.
-2. **APIs & Services → OAuth consent screen** — User type **External** (this
-   is the only option available without Workspace admin rights, and it's
-   fine — the worker's own domain check is the real gate).
-   - Under **Test users**, add your teammates' `@altoconsultants.ca`
-     addresses (up to 100), or publish the app to Production — for these
-     scopes (see below) that's self-service and doesn't need Google review.
-   - Heads up for the team: the first sign-in may show a "Google hasn't
-     verified this app" screen with a small **Advanced → Go to (app name)
-     (unsafe)** link. That's expected for an unverified internal tool —
-     one click, not a security issue — worth mentioning to non-technical
-     folks so they don't bail out at that screen.
+2. **APIs & Services → OAuth consent screen** — User type **Internal**.
+   Google only lets sign-in happen with `@altoconsultants.ca` accounts at
+   all, so there's no test-user list to maintain and no "unverified app"
+   warning screen for the team.
+   - (If Internal isn't available for a given project, External + adding
+     teammates under **Test users**, or publishing to Production, works
+     too — the scopes below are non-sensitive so that's still self-service.
+     The worker's own domain check is the real gate either way.)
 3. **APIs & Services → Credentials → Create credentials → OAuth client ID**,
    type "Web application".
 4. Authorized redirect URI: `https://<your-worker-subdomain>.workers.dev/oauth/callback`
