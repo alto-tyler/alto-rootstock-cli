@@ -47,9 +47,13 @@ normal work Google account is the entire auth step.
 Updates are one command:
 
 ```bash
-npm update -g @altotyler/alto-rootstock-cli
+npm install -g @altotyler/alto-rootstock-cli@latest
 altors install   # re-fetches latest global VS Code agent files
 ```
+
+(`npm update -g` looks equivalent but can silently resolve against npm's own
+stale local package metadata cache and skip a version — `install ...@latest`
+always asks the registry directly for the current release.)
 
 Sessions last 90 days; `altors login` again if yours expires.
 
@@ -66,7 +70,7 @@ after the command:
 ```
 ┌──────────────────────────────────────────────────────┐
 │  Update available: 1.0.0 → 1.2.0                    │
-│  Run: npm update -g @altotyler/alto-rootstock-cli   │
+│  Run: npm install -g @altotyler/alto-rootstock-cli@latest │
 └──────────────────────────────────────────────────────┘
 ```
 
