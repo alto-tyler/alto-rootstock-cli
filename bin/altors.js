@@ -73,7 +73,7 @@ program
     console.log();
     console.log(chalk.yellow('┌─────────────────────────────────────────────────────┐'));
     console.log(chalk.yellow('│') + chalk.white(`  Update available: ${chalk.dim(update.current)} → ${chalk.green(update.latest)}`.padEnd(53)) + chalk.yellow('│'));
-    console.log(chalk.yellow('│') + chalk.white(`  Run: ${chalk.cyan('npm install -g @altotyler/alto-rootstock-cli@latest')}`.padEnd(53)) + chalk.yellow('│'));
+    console.log(chalk.yellow('│') + chalk.white(`  Run: ${chalk.cyan('npm install -g @altotyler/alto-rootstock-cli@latest --prefer-online')}`.padEnd(53)) + chalk.yellow('│'));
     console.log(chalk.yellow('└─────────────────────────────────────────────────────┘'));
   }
 })();

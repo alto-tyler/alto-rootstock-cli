@@ -50,13 +50,16 @@ normal work Google account is the entire auth step.
 Updates are one command:
 
 ```bash
-npm install -g @altotyler/alto-rootstock-cli@latest
+npm install -g @altotyler/alto-rootstock-cli@latest --prefer-online
 altors install   # re-fetches latest global VS Code agent files
 ```
 
-(`npm update -g` looks equivalent but can silently resolve against npm's own
-stale local package metadata cache and skip a version — `install ...@latest`
-always asks the registry directly for the current release.)
+`npm update -g` and even plain `npm install -g pkg@latest` can both
+silently resolve against npm's own stale local package metadata cache and
+skip a version — confirmed in testing, not theoretical. `--prefer-online`
+forces npm to revalidate against the registry instead of trusting its
+local cache's freshness. Without it, `altors --version` can keep showing
+an old version after "updating" with no error or warning.
 
 Sessions last 90 days; `altors login` again if yours expires.
 
@@ -73,7 +76,7 @@ after the command:
 ```
 ┌──────────────────────────────────────────────────────┐
 │  Update available: 1.0.0 → 1.2.0                    │
-│  Run: npm install -g @altotyler/alto-rootstock-cli@latest │
+│  Run: npm install -g @altotyler/alto-rootstock-cli@latest --prefer-online │
 └──────────────────────────────────────────────────────┘
 ```
 

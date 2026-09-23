@@ -65,7 +65,7 @@ async function run() {
   console.log(chalk.dim('    3. For project-level skills: run altors new or altors update in your project'));
   console.log();
   console.log(chalk.bold('  To update in future:'));
-  console.log(chalk.cyan('    npm install -g @altotyler/alto-rootstock-cli@latest'));
+  console.log(chalk.cyan('    npm install -g @altotyler/alto-rootstock-cli@latest --prefer-online'));
   console.log(chalk.cyan('    altors install'));
   console.log();
 }
