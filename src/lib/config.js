@@ -10,7 +10,7 @@ const CONFIG_FILE = path.join(CONFIG_DIR, 'config.json');
 const DEFAULTS = {
   // Auth proxy in front of the private alto-rootstock-skills repo. Gates access
   // behind Google Sign-In restricted to @altoconsultants.ca. See proxy/README.md.
-  proxyUrl: 'https://alto-rootstock-auth.alto-tyler.workers.dev',
+  proxyUrl: 'https://alto-rootstock-auth.alto-rootstock-auth.workers.dev',
   token: null,
   email: null,
 };

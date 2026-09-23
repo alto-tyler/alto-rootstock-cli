@@ -173,7 +173,8 @@ async function handleContent(request, url, env) {
   });
 
   if (!ghRes.ok) {
-    return new Response(`Upstream fetch failed: HTTP ${ghRes.status} for ${filePath}`, { status: ghRes.status === 404 ? 404 : 502 });
+    const detail = await ghRes.text().catch(() => '');
+    return new Response(`Upstream fetch failed: HTTP ${ghRes.status} for ${filePath}\n${detail}`, { status: ghRes.status === 404 ? 404 : 502 });
   }
 
   const body = await ghRes.text();
