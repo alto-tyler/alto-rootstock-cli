@@ -1,6 +1,6 @@
 'use strict';
 
-const { fetchRemoteJson } = require('./fetcher');
+const { fetchVersionInfo } = require('./fetcher');
 
 function parseVersion(v) {
   return (v || '0.0.0').replace(/^v/, '').split('.').map(Number);
@@ -22,7 +22,7 @@ async function checkForUpdate(currentVersion) {
     const timeout = setTimeout(() => controller.abort(), 2500);
 
     const data = await Promise.race([
-      fetchRemoteJson('version.json'),
+      fetchVersionInfo(),
       new Promise((_, reject) =>
         setTimeout(() => reject(new Error('timeout')), 2500)
       ),
