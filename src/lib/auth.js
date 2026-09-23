@@ -42,11 +42,14 @@ function login(timeoutMs = LOGIN_TIMEOUT_MS) {
       const token = url.searchParams.get('token');
       const email = url.searchParams.get('email');
 
+      // This page is the reliable confirmation, not the terminal: npm hides
+      // postinstall script output by default (npm 7+, no --foreground-scripts),
+      // so during `npm install -g` nothing altors prints may ever be visible.
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
       res.end(
         token
-          ? '<html><body style="font-family:system-ui;background:#111;color:#eee;display:flex;height:100vh;align-items:center;justify-content:center"><p>Signed in. You can close this tab.</p></body></html>'
-          : '<html><body style="font-family:system-ui;background:#111;color:#eee;display:flex;height:100vh;align-items:center;justify-content:center"><p>Login failed. Return to your terminal.</p></body></html>'
+          ? `<html><body style="font-family:system-ui;background:#111;color:#eee;display:flex;height:100vh;align-items:center;justify-content:center"><p>Signed in as ${email}. You can close this tab.</p></body></html>`
+          : '<html><body style="font-family:system-ui;background:#111;color:#eee;display:flex;height:100vh;align-items:center;justify-content:center"><p>Login failed. Close this tab and run `altors login` in your terminal to try again.</p></body></html>'
       );
 
       if (settled) return;
