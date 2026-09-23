@@ -19,7 +19,7 @@ function openBrowser(url) {
   }
 }
 
-function login() {
+function login(timeoutMs = LOGIN_TIMEOUT_MS) {
   const { proxyUrl } = load();
 
   return new Promise((resolve, reject) => {
@@ -29,7 +29,7 @@ function login() {
       settled = true;
       server.close();
       reject(new Error('Login timed out. Run `altors login` again.'));
-    }, LOGIN_TIMEOUT_MS);
+    }, timeoutMs);
 
     const server = http.createServer((req, res) => {
       const url = new URL(req.url, 'http://127.0.0.1');
@@ -91,12 +91,12 @@ function whoami() {
 // Called at the start of any command that needs to fetch content. Prompts
 // an interactive sign-in automatically on first use instead of failing with
 // an error that tells the user to run a separate command themselves.
-async function ensureLoggedIn() {
+async function ensureLoggedIn(timeoutMs) {
   if (whoami()) return;
   console.log();
   console.log(chalk.yellow('  Not signed in — opening your browser to sign in with your @altoconsultants.ca Google account...'));
   console.log();
-  const { email } = await login();
+  const { email } = await login(timeoutMs);
   console.log(chalk.green(`  ✓ Signed in as ${email}`));
 }
 
