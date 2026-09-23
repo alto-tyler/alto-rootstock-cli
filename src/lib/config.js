@@ -8,7 +8,11 @@ const CONFIG_DIR = path.join(os.homedir(), '.alto-rootstock');
 const CONFIG_FILE = path.join(CONFIG_DIR, 'config.json');
 
 const DEFAULTS = {
-  baseUrl: 'https://raw.githubusercontent.com/alto-tyler/alto-rootstock-cli/main',
+  // Auth proxy in front of the private alto-rootstock-skills repo. Gates access
+  // behind Google Sign-In restricted to @altoconsultants.ca. See proxy/README.md.
+  proxyUrl: 'https://alto-rootstock-auth.alto-tyler.workers.dev',
+  token: null,
+  email: null,
 };
 
 function load() {
@@ -20,4 +24,12 @@ function load() {
   return { ...DEFAULTS };
 }
 
-module.exports = { load, CONFIG_FILE };
+function save(partial) {
+  const current = load();
+  const next = { ...current, ...partial };
+  if (!fs.existsSync(CONFIG_DIR)) fs.mkdirSync(CONFIG_DIR, { recursive: true });
+  fs.writeFileSync(CONFIG_FILE, JSON.stringify(next, null, 2), 'utf8');
+  return next;
+}
+
+module.exports = { load, save, CONFIG_FILE };

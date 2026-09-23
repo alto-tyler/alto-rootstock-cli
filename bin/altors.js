@@ -37,6 +37,30 @@ program
     await run();
   });
 
+program
+  .command('login')
+  .description('Sign in with your @altoconsultants.ca Google account')
+  .action(async () => {
+    const { run } = require('../src/commands/login');
+    await run();
+  });
+
+program
+  .command('logout')
+  .description('Sign out and clear the saved session')
+  .action(async () => {
+    const { run } = require('../src/commands/logout');
+    await run();
+  });
+
+program
+  .command('whoami')
+  .description('Show the currently signed-in account')
+  .action(async () => {
+    const { run } = require('../src/commands/whoami');
+    await run();
+  });
+
 (async () => {
   // Non-blocking version check — runs in background, prints after command
   const updatePromise = checkForUpdate(pkg.version).catch(() => null);

@@ -39,7 +39,7 @@ async function injectScaffolding(projectRoot) {
   for (const entry of SCAFFOLD_MANIFEST) {
     try {
       process.stdout.write(chalk.dim(`  Fetching ${entry.local}...`));
-      const content = await fetchRemoteFile(`project-template/${entry.template}`);
+      const content = await fetchRemoteFile(entry.template);
       writeFile(projectRoot, entry.local, content);
       process.stdout.write(`\r${' '.repeat(70)}\r  ${chalk.green('✓')} ${entry.local}\n`);
       results.ok.push(entry.local);
@@ -61,7 +61,7 @@ async function updateScaffolding(projectRoot) {
     const exists = fs.existsSync(fullPath);
     try {
       process.stdout.write(chalk.dim(`  Fetching ${entry.local}...`));
-      const content = await fetchRemoteFile(`project-template/${entry.template}`);
+      const content = await fetchRemoteFile(entry.template);
       writeFile(projectRoot, entry.local, content);
       const label = exists ? chalk.blue('↑') : chalk.green('+');
       process.stdout.write(`\r${' '.repeat(70)}\r  ${label} ${entry.local}\n`);

@@ -19,7 +19,7 @@ function getVsCodeAgentDir() {
 
 const GLOBAL_FILES = [
   {
-    remote: 'project-template/github/agents/Rootstock Agent.agent.md',
+    remote: 'github/agents/Rootstock Agent.agent.md',
     getTarget: () => path.join(getVsCodeAgentDir(), 'Rootstock Agent.agent.md'),
     label: 'VS Code Copilot global agent',
   },
