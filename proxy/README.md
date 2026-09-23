@@ -9,18 +9,31 @@ credentials is whoever deploys this.
 
 ### 1. Google OAuth client
 
+No Workspace admin access is needed for any of this — it's all self-service
+inside a Google Cloud project you own. The domain restriction is enforced by
+`worker.js` itself (it checks the `hd` claim and email domain on every
+sign-in and every content request), not by anything Workspace-side.
+
 1. https://console.cloud.google.com/ → create (or reuse) a project.
-2. **APIs & Services → OAuth consent screen** — User type "Internal" if this
-   Google Cloud project lives inside the altoconsultants.ca Workspace (this
-   alone restricts sign-in to your domain, before any server-side check even
-   runs). If it must be "External", keep the server-side `hd` check in
-   `worker.js` as the real gate.
+2. **APIs & Services → OAuth consent screen** — User type **External** (this
+   is the only option available without Workspace admin rights, and it's
+   fine — the worker's own domain check is the real gate).
+   - Under **Test users**, add your teammates' `@altoconsultants.ca`
+     addresses (up to 100), or publish the app to Production — for these
+     scopes (see below) that's self-service and doesn't need Google review.
+   - Heads up for the team: the first sign-in may show a "Google hasn't
+     verified this app" screen with a small **Advanced → Go to (app name)
+     (unsafe)** link. That's expected for an unverified internal tool —
+     one click, not a security issue — worth mentioning to non-technical
+     folks so they don't bail out at that screen.
 3. **APIs & Services → Credentials → Create credentials → OAuth client ID**,
    type "Web application".
 4. Authorized redirect URI: `https://<your-worker-subdomain>.workers.dev/oauth/callback`
    (you'll know the exact subdomain after step 2 below — you can come back and
    add it).
-5. Save the **Client ID** and **Client secret**.
+5. Scopes: only `openid` and `email` are requested (see `worker.js`) — these
+   are non-sensitive scopes, so no verification review is required to publish.
+6. Save the **Client ID** and **Client secret**.
 
 ### 2. Cloudflare Worker
 
@@ -67,9 +80,9 @@ altors new           # (or update/install) — should fetch skill files through 
 altors logout
 ```
 
-Try signing in with a non-altoconsultants.ca Google account — it should be
-rejected with a 403 both from the consent screen (if consent screen is
-"Internal") and from the worker's own `hd` check.
+Try signing in with a non-altoconsultants.ca Google account — the worker's
+own `hd`/email-domain check should reject it with a 403 regardless of
+consent screen settings.
 
 ## Rotating access
 
