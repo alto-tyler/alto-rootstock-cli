@@ -10,12 +10,12 @@ const program = new Command();
 
 program
   .name('altors')
-  .description('Rootstock Salesforce DX project creator and agent manager')
+  .description('Rootstock Salesforce DX project creator for Claude Code')
   .version(pkg.version, '-v, --version', 'Show installed version');
 
 program
   .command('new')
-  .description('Create a new Salesforce DX project with Rootstock agent scaffolding')
+  .description('Create a new Salesforce DX project set up for Claude Code and the Rootstock plugins')
   .action(async () => {
     const { run } = require('../src/commands/new');
     await run();
@@ -23,41 +23,9 @@ program
 
 program
   .command('update')
-  .description('Update Rootstock agent skill files in the current project')
+  .description('Move the current project to the Rootstock Claude Code plugins (removes old skill, Cursor, and Copilot files)')
   .action(async () => {
     const { run } = require('../src/commands/update');
-    await run();
-  });
-
-program
-  .command('install')
-  .description('Install or update the global Rootstock agent for VS Code Copilot')
-  .action(async () => {
-    const { run } = require('../src/commands/install');
-    await run();
-  });
-
-program
-  .command('login')
-  .description('Sign in with your @altoconsultants.ca Google account')
-  .action(async () => {
-    const { run } = require('../src/commands/login');
-    await run();
-  });
-
-program
-  .command('logout')
-  .description('Sign out and clear the saved session')
-  .action(async () => {
-    const { run } = require('../src/commands/logout');
-    await run();
-  });
-
-program
-  .command('whoami')
-  .description('Show the currently signed-in account')
-  .action(async () => {
-    const { run } = require('../src/commands/whoami');
     await run();
   });
 

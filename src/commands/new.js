@@ -6,8 +6,7 @@ const fs = require('fs');
 const os = require('os');
 const chalk = require('chalk');
 const prompts = require('prompts');
-const { injectScaffolding } = require('../lib/scaffold');
-const { ensureLoggedIn } = require('../lib/auth');
+const { injectScaffolding, printPluginHelp } = require('../lib/scaffold');
 
 
 function banner() {
@@ -84,13 +83,6 @@ function runSfProjectGenerate(projectName, outputDir) {
 async function run() {
   banner();
 
-  try {
-    await ensureLoggedIn();
-  } catch (err) {
-    console.error(chalk.red(`  ✗ ${err.message}`));
-    process.exit(1);
-  }
-
   checkSfCli();
 
   const { projectName, outputDir } = await promptProjectDetails();
@@ -108,18 +100,12 @@ async function run() {
 
   console.log(`  ${chalk.green('✓')} Salesforce DX project created`);
   console.log();
-  console.log(chalk.bold('  Injecting Rootstock agent scaffolding...'));
+  console.log(chalk.bold('  Adding Claude Code project files...'));
   console.log();
 
-  const results = await injectScaffolding(projectRoot);
+  injectScaffolding(projectRoot);
 
   console.log();
-
-  if (results.failed.length > 0) {
-    console.log(chalk.yellow(`  ⚠  ${results.failed.length} file(s) failed to fetch. Run ${chalk.cyan('altors update')} inside the project to retry.`));
-    console.log();
-  }
-
   console.log(chalk.bold.blue('  ┌─────────────────────────────────────────────┐'));
   console.log(chalk.bold.blue('  │') + chalk.bold.green(`  ✓ Project ready: ${path.relative(process.cwd(), projectRoot)}`.padEnd(46)) + chalk.bold.blue('│'));
   console.log(chalk.bold.blue('  └─────────────────────────────────────────────┘'));
@@ -127,8 +113,9 @@ async function run() {
   console.log(chalk.bold('  Next steps:'));
   console.log(chalk.dim(`    cd ${path.relative(process.cwd(), projectRoot)}`));
   console.log(chalk.dim('    sf org login web --alias myorg'));
-  console.log(chalk.dim('    code .                              # open in VS Code'));
-  console.log(chalk.dim('    # Reload VS Code to activate the Salesforce DX MCP server'));
+  console.log(chalk.dim('    claude                              # approve the Salesforce DX MCP server when asked'));
+  console.log();
+  printPluginHelp();
   console.log();
 }
 

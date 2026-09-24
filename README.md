@@ -1,130 +1,58 @@
 # alto-rootstock-cli
 
-CLI for creating and managing Rootstock Salesforce DX projects with AI agent scaffolding pre-installed for Claude Code, Cursor, and VS Code Copilot.
+CLI for creating Rootstock Salesforce DX projects set up for Claude Code.
 
-## What it does
+The skills live in the private [`alto-tyler/alto-rootstock-skills`](https://github.com/alto-tyler/alto-rootstock-skills) Claude Code plugin marketplace, not in this CLI. That repo ships two plugins: `salesforce` (Alto project practices such as metadata prefixes) and `rootstock` (Rootstock ERP). They install once per user and work in every project. See that repo's README for access and setup.
+
+## Commands
 
 ```
-altors new      Create a new SFDX project with Rootstock agent skills injected
-altors update   Update Rootstock skill files in the current project
-altors install  Install/update the global Rootstock agent for VS Code Copilot
-altors login    Sign in with your @altoconsultants.ca Google account
-altors logout   Sign out and clear the saved session
-altors whoami   Show the currently signed-in account
+altors new      Create a new SFDX project set up for Claude Code and the Rootstock plugins
+altors update   Move an existing project to the plugins (removes old skill, Cursor, and Copilot files)
 ```
 
-After `altors new`, the generated project contains:
-- `.claude/CLAUDE.md` + `.claude/skills/` — Claude Code (router + 10 skill files)
-- `.cursor/rules/rootstock.mdc` — Cursor AI
-- `.github/agents/Rootstock Agent.agent.md` — VS Code Copilot
-- `.github/copilot-instructions.md` — VS Code Copilot always-on
-- `.vscode/mcp.json` — Salesforce DX MCP server
-- `.vscode/tasks.json` — Command palette tasks (see below)
-- `docs/*.csv` + `docs/rootstock-field-help-sample.md` — canonical reference
-  data the skill files above cite by path (e.g. "Canonical list source:
-  docs/rootstock-poloader-modes.csv")
+`altors new` runs `sf project generate`, then adds:
+- `.claude/CLAUDE.md`: short project instructions, the triggeroptions rule, and an empty **Metadata Prefixes** section that Claude fills in on first use
+- `.claude/settings.json`: points Claude Code at the `alto-rootstock` marketplace and enables both plugins
+- `.mcp.json`: the Salesforce DX MCP server
 
-## VS Code / Cursor Command Palette
+`altors update` is for projects created with altors 1.x. It:
+- deletes the copied `.claude/skills/rootstock-*.md` files, the Cursor rules, the Copilot agent and instructions, and the `docs/rootstock-*` reference files
+- removes only the Salesforce DX entries and `Rootstock:` tasks from `.vscode/` and `.cursor/` config, leaving anything else in those files
+- replaces the old generated `CLAUDE.md` router (a hand-written `CLAUDE.md` is left alone)
+- deletes the global VS Code Copilot agent that `altors install` used to add
 
-Once a project is open, `Ctrl+Shift+P` → **"Tasks: Run Task"** exposes:
-- **Rootstock: Update Skills** — pulls latest skill files through the auth proxy
-- **Rootstock: Check Version** — shows installed CLI version
-- **Rootstock: Install Global Agent** — installs the VS Code Copilot agent globally
+Review the changes and commit them.
 
----
-
-## How users install it
-
-The npm package is public — no auth needed to install the CLI itself:
-
-```bash
-npm install -g @altotyler/alto-rootstock-cli
-altors login      # sign in with your @altoconsultants.ca Google account (opens a browser)
-```
-
-The actual skill/docs content lives in a private repo and is only served after
-Google Sign-In restricted to `@altoconsultants.ca` — see [`proxy/README.md`](proxy/README.md)
-for how that's wired up. Nobody handles a GitHub token; signing in with your
-normal work Google account is the entire auth step.
-
-Updates are one command:
+## Install
 
 ```bash
 npm install -g @altotyler/alto-rootstock-cli@latest --prefer-online
-altors install   # re-fetches latest global VS Code agent files
 ```
 
-`npm update -g` and even plain `npm install -g pkg@latest` can both
-silently resolve against npm's own stale local package metadata cache and
-skip a version — confirmed in testing, not theoretical. `--prefer-online`
-forces npm to revalidate against the registry instead of trusting its
-local cache's freshness. Without it, `altors --version` can keep showing
-an old version after "updating" with no error or warning.
+The CLI needs no sign-in. Access to the skills is controlled by who has access to the GitHub repo.
 
-Sessions last 90 days; `altors login` again if yours expires.
+`npm update -g` and even plain `npm install -g pkg@latest` can resolve against npm's stale local metadata cache and silently skip a version. `--prefer-online` forces npm to check the registry.
 
----
+## Update notification
 
-## How the update notification works
+Every `altors` command fetches `version.json` from this repo's `main` branch in the background (2.5s timeout, unauthenticated). If `cliVersion` there is newer than the installed version, it prints an update notice after the command.
 
-Every time `altors` runs any command, it fetches `version.json` from this
-repo's own `main` branch in the background (2.5s timeout, non-blocking,
-unauthenticated — this check has to work even before anyone has signed in).
-If the remote `cliVersion` is newer than the installed version, it prints
-after the command:
-
-```
-┌──────────────────────────────────────────────────────┐
-│  Update available: 1.0.0 → 1.2.0                    │
-│  Run: npm install -g @altotyler/alto-rootstock-cli@latest --prefer-online │
-└──────────────────────────────────────────────────────┘
-```
-
-To trigger update notices, bump `cliVersion` in this repo's `version.json`.
-
----
-
-## Releasing a new CLI version
+## Releasing
 
 1. Update `version` in `package.json`
-2. Commit and tag: `git tag v1.x.x && git push origin v1.x.x`
-3. GitHub Actions publishes to npmjs.com automatically (requires `NPM_TOKEN` secret in repo Settings → Secrets → Actions)
-4. Bump `cliVersion` in this repo's `version.json`
-5. Users see the update prompt on their next `altors` command
+2. Commit and tag: `git tag v2.x.x && git push origin v2.x.x`
+3. GitHub Actions publishes to npmjs.com (requires the `NPM_TOKEN` secret)
+4. Bump `cliVersion` in `version.json` so users see the update notice
 
----
-
-## Repository layout
+## Layout
 
 ```
-alto-rootstock-cli/                 ← this repo (CLI source, public, published to npmjs.com)
-├── bin/altors.js                   ← entry point + update notification
-├── version.json                    ← bump cliVersion here to trigger update notices
-├── src/
-│   ├── commands/{new,update,install,login,logout,whoami}.js
-│   └── lib/
-│       ├── config.js               ← ~/.alto-rootstock/config.json (proxy URL, session)
-│       ├── auth.js                 ← altors login/logout/whoami (local callback server)
-│       ├── fetcher.js              ← proxy-authenticated content fetch + public version check
-│       ├── scaffold.js             ← file manifest + writer
-│       └── updater.js              ← background version check
-└── .github/workflows/publish.yml   ← auto-publishes to npmjs.com on git tag push
-
-proxy/                               ← Cloudflare Worker (this repo, not published to npm)
-├── worker.js                        ← Google-authenticated gateway to the private skills repo
-├── wrangler.toml
-└── README.md                        ← deployment checklist
-
-alto-tyler/alto-rootstock-skills     ← separate PRIVATE repo — the actual skill/docs content
-├── claude/CLAUDE.md, claude/skills/ ← 10 Rootstock skill files
-├── cursor/rules/rootstock.mdc
-├── github/agents/Rootstock Agent.agent.md
-├── github/copilot-instructions.md
-├── vscode/mcp.json + tasks.json
-├── docs/                            ← Rootstock field/transaction reference docs
-└── scripts/agent/                   ← legacy PowerShell installer (pre-dates altors)
+bin/altors.js           entry point + update notification
+version.json            bump cliVersion to trigger update notices
+src/commands/new.js     sf project generate + project files
+src/commands/update.js  1.x → plugin migration
+src/lib/scaffold.js     project file templates and legacy file cleanup
+src/lib/updater.js      background version check
+scripts/postinstall.js  adds npm's global bin folder to PATH if missing
 ```
-
-`alto-tyler/rootstock-agent-distribution` (an older, separate distribution
-mechanism that predated `altors`) has been folded into `alto-rootstock-skills`
-and is now private + archived rather than deleted.

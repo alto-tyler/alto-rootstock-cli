@@ -3,8 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const chalk = require('chalk');
-const { updateScaffolding } = require('../lib/scaffold');
-const { ensureLoggedIn } = require('../lib/auth');
+const { migrateProject, removeGlobalCopilotAgent, printPluginHelp } = require('../lib/scaffold');
 
 function findProjectRoot(startDir) {
   let dir = startDir;
@@ -19,7 +18,7 @@ function findProjectRoot(startDir) {
 
 async function run() {
   console.log();
-  console.log(chalk.bold('  Rootstock: Update Skills'));
+  console.log(chalk.bold('  Rootstock: Move Project to the Claude Code Plugin'));
   console.log(chalk.dim('  ─────────────────────────────────────────────────'));
   console.log();
 
@@ -32,30 +31,21 @@ async function run() {
   }
 
   console.log(`  ${chalk.dim('Project root:')} ${projectRoot}`);
-
-  try {
-    await ensureLoggedIn();
-  } catch (err) {
-    console.error(chalk.red(`  ✗ ${err.message}`));
-    process.exit(1);
-  }
-
-  const results = await updateScaffolding(projectRoot);
-
-  const total = results.updated.length + results.added.length;
   console.log();
 
-  if (results.failed.length > 0) {
-    console.log(chalk.yellow(`  ⚠  ${results.failed.length} file(s) could not be fetched.`));
-    console.log(chalk.dim('     Run `altors login` again, or check your network connection.'));
-  }
+  const { removed } = migrateProject(projectRoot);
 
-  if (total === 0 && results.failed.length === 0) {
-    console.log(chalk.green('  ✓ All skill files are already up to date.'));
+  const globalAgent = removeGlobalCopilotAgent();
+  if (globalAgent) console.log(`  ${chalk.red('−')} ${globalAgent}`);
+
+  console.log();
+  if (removed.length > 0) {
+    console.log(chalk.green(`  ✓ Removed ${removed.length} old skill/Cursor/Copilot file(s).`) + chalk.dim(' Review and commit the changes.'));
   } else {
-    console.log(chalk.green(`  ✓ Done.`) + chalk.dim(` ${results.updated.length} updated, ${results.added.length} added, ${results.failed.length} failed.`));
+    console.log(chalk.green('  ✓ Project is up to date.'));
   }
-
+  console.log();
+  printPluginHelp();
   console.log();
 }
 

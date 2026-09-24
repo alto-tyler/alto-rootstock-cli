@@ -1,7 +1,7 @@
 {
   "name": "@altotyler/alto-rootstock-cli",
-  "version": "1.1.6",
-  "description": "CLI for creating and managing Rootstock Salesforce DX projects with AI agent scaffolding",
+  "version": "2.0.0",
+  "description": "CLI for creating Rootstock Salesforce DX projects set up for Claude Code",
   "bin": {
     "altors": "./bin/altors.js"
   },

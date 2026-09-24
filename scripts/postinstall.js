@@ -119,44 +119,14 @@ function runUnix() {
   console.log('');
 }
 
-const AUTO_LOGIN_TIMEOUT_MS = 2 * 60 * 1000;
-
-async function attemptAutoLogin() {
-  // Best-effort, same as the PATH fix above: never fail the install over
-  // this. Skipped in CI and non-interactive installs for the same reason
-  // as runWindows/runUnix, plus a short timeout so an unattended install
-  // in some wrapper script can't hang on a browser that never gets clicked.
-  let auth;
-  try {
-    auth = require('../src/lib/auth');
-  } catch {
-    return;
-  }
-
-  if (auth.whoami()) return;
-
-  try {
-    console.log('');
-    console.log('  altors: signing you in with your @altoconsultants.ca Google account...');
-    console.log('');
-    const { email } = await auth.login(AUTO_LOGIN_TIMEOUT_MS);
-    console.log(`  ✓ Signed in as ${email}`);
-    console.log('');
-  } catch {
-    console.log('');
-    console.log('  altors: sign-in skipped for now — run `altors login` when you\'re ready.');
-    console.log('');
-  }
-}
-
-async function main() {
+function main() {
   if (!isGlobalInstall()) return;
   if (process.env.CI) return;
 
   if (process.platform === 'win32') runWindows();
   else if (process.platform === 'darwin' || process.platform === 'linux') runUnix();
-
-  await attemptAutoLogin();
 }
 
-main().catch(() => {});
+try {
+  main();
+} catch {}
